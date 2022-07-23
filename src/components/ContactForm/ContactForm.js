@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
-import { addContact } from 'redux/itemSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useGetContactsQuery, useAddContactMutation } from 'redux/itemSlice';
 import PropTypes from 'prop-types';
 import { ToastContainer, toast } from 'react-toastify';
   import 'react-toastify/dist/ReactToastify.css';
 import s from './ContactForm.module.css';
 import { nanoid } from 'nanoid';
-import { getItems } from 'redux/itemSelectors';
+
 
 const ContactsForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  const contacts = useSelector(getItems);
-  const dispatch = useDispatch();
+  const { data: contacts } = useGetContactsQuery();
+  const [addContact] = useAddContactMutation();
 
   const handleChange = event => {
     const { name, value } = event.target;
@@ -42,7 +41,8 @@ const ContactsForm = () => {
     if (contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())) {
       toast.warning('Name is already in contacts list!')
     } else {
-      dispatch(addContact(newContact))
+      addContact(newContact)
+      toast.success('New contact is added a phonebook')
     }
     reset();
   }

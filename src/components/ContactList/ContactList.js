@@ -2,23 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import s from './ContactList.module.css';
 import { ContactItem } from './ContactItem';
+import { useGetContactsQuery } from 'redux/itemSlice';
 import { useSelector } from 'react-redux';
-import { getFilter, getItems } from 'redux/itemSelectors';
+import { getFilter } from 'redux/itemSelectors';
 
 const ContactList = () => {
-  const items = useSelector(getItems);
-  const filter = useSelector(getFilter);
-  
+  const { data = [] } = useGetContactsQuery();
+  const { filter } = useSelector(state => getFilter(state));
 
-  const getNormalizedItem = () => {
-    const  normalizedFilter = filter.toLowerCase().trim();
-    return items.filter(item => item.name.toLowerCase().includes(normalizedFilter))
+  const filteredList = () => {
+    const normalizedList = filter.toLowerCase().trim();
+    return data.filter(contacts => contacts.name.toLowerCase().includes(normalizedList))
   }
-  const contacts = getNormalizedItem()
+const contactsList = filteredList();
 
     return (
       <ul className={s.contactsList}>
-        {contacts.map(({ id, name, number }) => {
+        {contactsList.map(({ id, name, number }) => {
           return (
             <ContactItem
               key={id}

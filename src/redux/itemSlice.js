@@ -1,25 +1,39 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const initialState = {
-    items: [],
-    filter: ''
-}
+export const contactsApi = createApi({
+  reducerPath: 'todoApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://62dbe1ff4438813a260c8063.mockapi.io/',
+  }),
+  tagTypes: ['Contacts'],
+  endpoints: builder => ({
+    getContacts: builder.query({
+      query: () => 'contacts',
+      providesTags: ['Contacts'],
+    }),
+    deleteContact: builder.mutation({
+      query: contactsId => ({
+        url: `contacts/${contactsId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Contacts'],
+    }),
+    addContact: builder.mutation({
+      query: newContact => ({
+        url: 'contacts',
+        method: 'POST',
+        body: {
+          name: newContact.name,
+          number: newContact.number,
+        },
+      }),
+      invalidatesTags: ['Contacts'],
+    }),
+  }),
+});
 
-export const contactSlice = createSlice({
-    name: 'contacts', 
-    initialState,
-    reducers: {
-        addContact(state, { payload }) {
-            state.items.push(payload);
-        },
-        deleteContact(state, { payload }) {
-            state.items = state.items.filter(item  => item.id !== payload);
-        },
-        changeFilter(state, { payload }) {
-            state.filter = payload;
-        },
-    }   
-})
-
-      
-export const { addContact, deleteContact, changeFilter } =  contactSlice.actions;
+export const {
+  useGetContactsQuery,
+  useDeleteContactMutation,
+  useAddContactMutation,
+} = contactsApi;
